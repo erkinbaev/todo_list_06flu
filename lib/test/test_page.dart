@@ -1,9 +1,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:todo_list_06flu/add/add_page.dart';
-import 'dart:math';
-
-import 'package:todo_list_06flu/database/todo.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -16,18 +13,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  bool _isVisible = true;
-  Color _containerColor = Colors.blue;
-  List<Color> _colors = [Colors.blue, Colors.red, Colors.yellow, Colors.green, Colors.black];
-
-  //mock - временные данные для тестирования
-  List<Todo> todoList = [
-    Todo(id: 1, title: "Записаться на курсы flutter", createdAt: "01.04.2026", isDone: true),
-    Todo(id: 2, title: "Прочесть книгу Война и Мир", createdAt: "31.12.2025", isDone: false),
-    Todo(id: 3, title: "Купить новый телефон", createdAt: "12.12.2025", isDone: true),
-    Todo(id: 4, title: "Посмотреть сериал Пацаны", createdAt: "10.09.2025", isDone: false)
-  ]; 
-
   int _counter = 0;
 
   void _incrementCounter() {
@@ -57,13 +42,16 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: ListView.builder(
-          itemCount: todoList.length,
-          itemBuilder: (context, index) {
-            final title = todoList[index].title;
-            return ListTile(title: Text(title));
-          }
-          )
+        child: Column(
+          mainAxisAlignment: .center,
+          children: [
+            const Text('You have pushed the button this many times:'),
+            Text(
+              '$_counter',
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
@@ -71,14 +59,6 @@ class _MyHomePageState extends State<MyHomePage> {
         child: const Icon(Icons.add),
       ),
     );
-  }
-
-  void _updateUI() {
-    setState(() {
-       _isVisible = !_isVisible;
-        print(_isVisible);
-      _containerColor = _colors[Random().nextInt(_colors.length)];
-    });
   }
 
   void _navigateToAddPage() async {
@@ -103,11 +83,5 @@ class _MyHomePageState extends State<MyHomePage> {
     //останавливать таймеры, либо анимации
     //stream - подписки
   }
-}
 
-
-extension on Random {
-  void nextInt(int lenth) {
-
-  }
 }

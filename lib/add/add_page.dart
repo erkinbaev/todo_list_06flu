@@ -59,6 +59,7 @@ class _AddPageState extends State<AddPage> {
     // TODO: implement dispose
     super.dispose();
     _timer.cancel();
+    _controller.dispose();
     print("Add page - dispose");
   }
 }
