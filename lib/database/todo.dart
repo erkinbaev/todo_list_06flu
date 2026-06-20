@@ -8,5 +8,6 @@ class Todo {
     required this.id, 
     required this.title, 
     required this.createdAt, 
-    required this.isDone});
+    required this.isDone,
+    });
 }

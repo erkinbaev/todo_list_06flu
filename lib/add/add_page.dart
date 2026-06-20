@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 
-class AddPage extends StatefulWidget{
+import 'package:todo_list_06flu/add/add_view_model.dart';
+import 'package:todo_list_06flu/database/app_database.dart';
+import 'package:todo_list_06flu/database/app_repository.dart';
 
-  const AddPage({super.key});
+class AddPage extends StatefulWidget{
+  final AppDatabase database;
+
+  const AddPage({super.key, required this.database});
 
   @override
   State<StatefulWidget> createState() => _AddPageState();
@@ -11,18 +16,20 @@ class AddPage extends StatefulWidget{
 
 
 class _AddPageState extends State<AddPage> {
+  late final AddViewModel vm;
+  late final AppDatabase db;
+
   TextEditingController _controller = TextEditingController();
-  late Timer _timer;
+  
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    print("Add page - initState");
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      final date = DateTime.now();
-      print("${date.minute}: ${date.second}");
-    });
+    
+    db = widget.database;
+    final repo = AppRepositoryImpl(db: db);
+    vm = AddViewModel(repo: repo);
   }
 
   @override
@@ -46,11 +53,11 @@ class _AddPageState extends State<AddPage> {
           ],
         ),
       ),
-    
     );
   }
 
   void _saveTodo() {
+    vm.addTodo(_controller.text);
     Navigator.pop(context, _controller.text);
   }
 
@@ -58,8 +65,6 @@ class _AddPageState extends State<AddPage> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    _timer.cancel();
     _controller.dispose();
-    print("Add page - dispose");
   }
 }

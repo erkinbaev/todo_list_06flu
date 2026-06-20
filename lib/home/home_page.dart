@@ -1,12 +1,18 @@
 
 import 'package:flutter/material.dart';
 import 'package:todo_list_06flu/add/add_page.dart';
+import 'package:todo_list_06flu/database/app_database.dart';
+import 'package:todo_list_06flu/database/app_repository.dart';
 import 'dart:math';
 
 import 'package:todo_list_06flu/database/todo.dart';
+import 'package:todo_list_06flu/home/home_view_model.dart';
+import 'package:todo_list_06flu/settings/settings_page.dart';
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+  final bool isDarkTheme;
+  final Function(bool) onThemeChanged;
+  const MyHomePage({super.key, required this.title, required this.isDarkTheme, required this.onThemeChanged});
 
   final String title;
 
@@ -16,25 +22,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  bool _isVisible = true;
-  Color _containerColor = Colors.blue;
-  List<Color> _colors = [Colors.blue, Colors.red, Colors.yellow, Colors.green, Colors.black];
-
-  //mock - временные данные для тестирования
-  List<Todo> todoList = [
-    Todo(id: 1, title: "Записаться на курсы flutter", createdAt: "01.04.2026", isDone: true),
-    Todo(id: 2, title: "Прочесть книгу Война и Мир", createdAt: "31.12.2025", isDone: false),
-    Todo(id: 3, title: "Купить новый телефон", createdAt: "12.12.2025", isDone: true),
-    Todo(id: 4, title: "Посмотреть сериал Пацаны", createdAt: "10.09.2025", isDone: false)
-  ]; 
-
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
+  late final HomeViewModel vm;
+  late final AppDatabase db;
 
   //инициализация в памяти(создается в памяти)
   @override
@@ -45,7 +34,15 @@ class _MyHomePageState extends State<MyHomePage> {
     //Подгружать данные
     //Начинать таймеры, анимации и т.д
     //Давать значения тем переменным еще нет значения
+
+    //объект1
+    db = AppDatabase();
+    final repo = AppRepositoryImpl(db: db);
+    vm = HomeViewModel(repo: repo);
+    vm.getTodoList();
   }
+
+
 
   //прорисовка интерфейса
   @override
@@ -55,37 +52,36 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
+        actions: [IconButton(onPressed: _navigateToSettingsPage, icon: Icon(Icons.settings))],
       ),
       body: Center(
         child: ListView.builder(
-          itemCount: todoList.length,
+          itemCount: vm.todoList.length,
           itemBuilder: (context, index) {
-            final title = todoList[index].title;
+            final title = vm.todoList[index].title;
             return ListTile(title: Text(title));
           }
           )
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: _navigateToAddPage,
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ),
     );
   }
 
-  void _updateUI() {
-    setState(() {
-       _isVisible = !_isVisible;
-        print(_isVisible);
-      _containerColor = _colors[Random().nextInt(_colors.length)];
-    });
+  void _navigateToAddPage() async {
+    final result = await Navigator.of(context).push(MaterialPageRoute(builder: (_) => AddPage(database: db)));
+    if (result != null) {
+      setState(() {
+         vm.getTodoList();
+      });
+    }
   }
 
-  void _navigateToAddPage() async {
-    final result = await Navigator.of(context).push(MaterialPageRoute(builder: (_) => AddPage()));
-    if (result != null) {
-      print("Текст задачи: $result");
-    }
+  void _navigateToSettingsPage() {
+    Navigator.of(context).push(MaterialPageRoute(builder: (_) => SettingsPage(isDarkTheme: widget.isDarkTheme, onThemeChanged: widget.onThemeChanged)));
   }
 
   @override
