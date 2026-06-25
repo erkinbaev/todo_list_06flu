@@ -1,11 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:todo_list_06flu/home/home_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final preferences = await SharedPreferences.getInstance();
   final isDarkTheme = preferences.getBool('isDarkTheme') ?? false;
   print("темная тема: $isDarkTheme");
+
+//не запускать приложение без не подгруженных данных
+  await Hive.initFlutter();
+  await Hive.openBox('todoBox');
+
+  //await HiveFlutter.init();
+
   runApp(MyApp(isDarkTheme: isDarkTheme));
 }
 

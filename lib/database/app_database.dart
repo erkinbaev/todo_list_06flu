@@ -1,13 +1,40 @@
 import 'package:todo_list_06flu/database/todo.dart';
+import 'package:hive/hive.dart';
 
 class AppDatabase {
-  //mock - временные данные для тестирования
-  List<Todo> _todoList = [
-    Todo(id: 1, title: "Записаться на курсы flutter", createdAt: "01.04.2026", isDone: true),
-    Todo(id: 2, title: "Прочесть книгу Война и Мир", createdAt: "31.12.2025", isDone: false),
-    Todo(id: 3, title: "Купить новый телефон", createdAt: "12.12.2025", isDone: true),
-    Todo(id: 4, title: "Посмотреть сериал Пацаны", createdAt: "10.09.2025", isDone: false)
-  ]; 
+  //создаем таблицу для наших задач
+  final Box box = Hive.box('todoBox');
+
+  List<Todo> _todoList = []; 
+
+  AppDatabase() {
+    //при инициализации класса AppDatabase, подгружаем данные
+    loadTodos();
+  }
+
+  void loadTodos() {
+    //берем данные из таблицы и достаем список задач
+    final data = box.get('todos', defaultValue: []);
+
+    //превращаем в объекты дарт читаемые для нашей платформы
+    _todoList = List<Map>.from(data).map( (e) {
+      return Todo(id: e['id'], title: e['title'], createdAt: e['createdAt'], isDone: e['isDone']);
+    }).toList();
+  }
+
+  void saveTodos() {
+    //прежде чем положить, превращаем наши объекты в тип, который используется в hive
+    final data = _todoList.map( (todo) {
+      return {
+        "id": todo.id,
+        "title": todo.title,
+        "isDone": todo.isDone,
+        "createdAt": todo.createdAt
+      };
+    }).toList();
+
+    box.put('todos', data);
+  }
 
 //CRUD operations
 
@@ -19,10 +46,18 @@ class AppDatabase {
 //CREATE - сделать запись
   void addTodo(Todo todo) {
     _todoList.insert(0, todo);
+    saveTodos();
   }
 
 //UPDATE - обновить записи
-
+  void updateTodo(int index, String title) {
+    _todoList[index].title = title;
+    saveTodos();
+  }
 
 //DELETE - удалить записи
+  void deleteTodo(int index) {
+    _todoList.removeAt(index);
+    saveTodos();
+  }
 }

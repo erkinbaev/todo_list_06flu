@@ -6,6 +6,7 @@ import 'package:todo_list_06flu/database/app_repository.dart';
 import 'dart:math';
 
 import 'package:todo_list_06flu/database/todo.dart';
+import 'package:todo_list_06flu/details/todo_detail_page.dart';
 import 'package:todo_list_06flu/home/home_view_model.dart';
 import 'package:todo_list_06flu/settings/settings_page.dart';
 
@@ -59,7 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
           itemCount: vm.todoList.length,
           itemBuilder: (context, index) {
             final title = vm.todoList[index].title;
-            return ListTile(title: Text(title));
+            return ListTile(title: Text(title), onTap: () => _navigateToDetailsPage(index));
           }
           )
       ),
@@ -82,6 +83,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _navigateToSettingsPage() {
     Navigator.of(context).push(MaterialPageRoute(builder: (_) => SettingsPage(isDarkTheme: widget.isDarkTheme, onThemeChanged: widget.onThemeChanged)));
+  }
+  
+  void _navigateToDetailsPage(int index) {
+    Navigator.of(context).push(MaterialPageRoute(builder: (_) => TodoDetailPage(index: index)));  
   }
 
   @override
