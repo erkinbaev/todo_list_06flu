@@ -8,6 +8,7 @@ import 'dart:math';
 import 'package:todo_list_06flu/database/todo.dart';
 import 'package:todo_list_06flu/details/todo_detail_page.dart';
 import 'package:todo_list_06flu/home/home_view_model.dart';
+import 'package:todo_list_06flu/home/todo_tile.dart';
 import 'package:todo_list_06flu/settings/settings_page.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -46,30 +47,64 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
   //прорисовка интерфейса
-  @override
+  // @override
+  // Widget build(BuildContext context) {
+  //   print("Home page - build");
+  //   return Scaffold(
+  //     appBar: AppBar(
+  //       backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+  //       title: Text(widget.title),
+  //       actions: [IconButton(onPressed: _navigateToSettingsPage, icon: Icon(Icons.settings))],
+  //     ),
+  //     body: Center(
+  //       child: ListView.builder(
+  //         itemCount: vm.todoList.length,
+  //         itemBuilder: (context, index) {
+  //           final title = vm.todoList[index].title;
+  //           return ListTile(title: Text(title), onTap: () => _navigateToDetailsPage(index));
+  //         }
+  //         )
+  //     ),
+  //     floatingActionButton: FloatingActionButton(
+  //       onPressed: _navigateToAddPage,
+  //       tooltip: 'Increment',
+  //       child: const Icon(Icons.add),
+  //     ),
+  //   );
+  // }
+
+   @override
   Widget build(BuildContext context) {
-    print("Home page - build");
-    return Scaffold(
+      return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: Text("Мои задачи"),
         actions: [IconButton(onPressed: _navigateToSettingsPage, icon: Icon(Icons.settings))],
       ),
-      body: Center(
+
+      body:  Center(
         child: ListView.builder(
           itemCount: vm.todoList.length,
           itemBuilder: (context, index) {
-            final title = vm.todoList[index].title;
-            return ListTile(title: Text(title), onTap: () => _navigateToDetailsPage(index));
-          }
+            final todo = vm.todoList[index];
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                child: TodoTile(title: todo.title, date: todo.createdAt, isDone: todo.isDone, onChanged: (value) {
+                  setState(() {
+                    todo.isDone = value ?? false;
+                    //vm.updateTodo(index, todo.isDone); 
+                    vm.getTodoList();
+                  });
+                },),
+              );
+            }
           )
-      ),
-      floatingActionButton: FloatingActionButton(
+        ),
+        floatingActionButton: FloatingActionButton(
         onPressed: _navigateToAddPage,
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ),
-    );
+      );
   }
 
   void _navigateToAddPage() async {
